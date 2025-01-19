@@ -1,6 +1,39 @@
-class SubtractionGame():
+class Game():
 
     def __init__(self):
+        self.result = []
+        self.is_periodic = False
+        self.is_arithmeticly_periodic = False
+        self.first_period_start = None
+        self.first_period_end = None
+
+    def detect_periodicity(self):
+        n = len(self.result)
+        for l in range(n//3):
+            for p in range(1, (n - l)//3):  
+                is_periodic = True
+                for i in range(l, n - p):
+                    if self.result[i] != self.result[i + p]:
+                        is_periodic = False
+                        break
+                if is_periodic:
+                    self.is_periodic = True
+                    self.first_period_start = l
+                    self.first_period_end = l + p-1
+        
+
+    def detect_arithmetic_periodicity(self):
+        pass
+
+    def __str__(self):
+        if self.is_periodic:
+            return f"Periodic game with period {self.first_period_start} - {self.first_period_end}"
+        return f"Non-periodic game"
+
+class SubtractionGame(Game):
+
+    def __init__(self):
+        super().__init__()
         self.valid_moves = set()
 
     def add_move(self, move):
@@ -64,17 +97,12 @@ class SubtractionGame():
     def __str__(self):
         if self.valid_moves == set():
             return f"Subtraction game with no valid moves"
-        return f"Subtraction game with valid moves {self.valid_moves}"
+        return f"Subtraction game with valid moves {sorted(self.valid_moves)}\n" + super().__str__()
 
 if __name__ == '__main__':
     game = SubtractionGame()
-    game.add_moves([1, 2, 3, 5, 13])
-    game.calculate(int(1e5))
+    game.add_moves([1,2,6,11])
+    game.calculate(40)
+    game.detect_periodicity()
     print(game)
-    game.solve(starting_position=21)
-    game.solve(50)
-    game.solve(96)
-    game.solve(97)
-    game.solve(98)
-    game.solve(99)
-    game.player1_winrate(int(1e5))
+    game.show_result()
