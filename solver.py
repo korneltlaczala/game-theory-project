@@ -210,6 +210,7 @@ class SubtractionGame(Game):
         return f"Subtraction game with valid moves {sorted(self.valid_moves)}\n" + super().__str__()
 
 if __name__ == '__main__':
+    pass
     # game = SubtractionGame()
     # game.add_moves([1,4,10])
     # game.add_moves([1,2,6,11])

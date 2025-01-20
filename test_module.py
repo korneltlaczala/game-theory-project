@@ -86,7 +86,8 @@ class TestCollection():
     def plot_move_count(self):
         x = [test.largest_possible_move for test in self.tests]
         y = [test.mean_period for test in self.tests]
-        plt.plot(x, y, label=f"Mean period of {self.move_count} moves")
+        game_count = self.tests[0].game_count
+        plt.plot(x, y, label=f"Mean period over {game_count} games")
         plt.xlabel("Largest possible move")
         plt.ylabel("Mean period")
         plt.title(f"Mean period of {self.move_count} moves")
@@ -97,7 +98,8 @@ class TestCollection():
     def plot_lpm(self):
         x = [test.move_count for test in self.tests]        
         y = [test.mean_period for test in self.tests]
-        plt.plot(x, y, label=f"Mean period of {self.largest_possible_move} as largest possible move")
+        game_count = self.tests[0].game_count
+        plt.plot(x, y, label=f"Mean period of over {game_count} games")
         plt.xlabel("Number of moves")
         plt.ylabel("Mean period")
         plt.title(f"Mean period of {self.largest_possible_move} as largest possible move")
@@ -154,6 +156,7 @@ if __name__ == "__main__":
     # tester.test_periodicity_of_subtraction_game_by_move_count(move_count=5)
     # tester.test_periodicity_of_subtraction_game_by_largest_possible_move(largest_possible_move=40)
     # tester.test_periodicity_of_subtraction_game_by_largest_possible_move(largest_possible_move=30)
+    # tester.test_periodicity_of_subtraction_game_by_largest_possible_move(largest_possible_move=10)
     # tester.save("tester.pkl")
     # tester.display_library("subtraction", "move_count")
     # tester.display_library("subtraction", "lpm")
