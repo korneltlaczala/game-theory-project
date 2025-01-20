@@ -1,5 +1,6 @@
 import pickle
 import random
+import matplotlib.pyplot as plt
 
 from solver import SubtractionGame
 
@@ -22,6 +23,7 @@ class Tester():
     def test_periodicity_of_subtraction_game_by_largest_possible_move(self, largest_possible_move):
         collection = TestCollection(largest_possible_move=largest_possible_move)
         collection.run_tests()
+        self.subtraction_game_test_library_by_largest_possible_move[largest_possible_move] = collection
 
     def display_library(self, game_type, test_type):
         if game_type == "subtraction":
@@ -36,6 +38,20 @@ class Tester():
                 library = self.all_but_game_test_library_by_largest_possible_move
         for key, collection in library.items():
             print(collection)
+
+    def plot_library(self, game_type, test_type):
+        if game_type == "subtraction":
+            if test_type == "move_count":
+                library = self.subtraction_game_test_library_by_move_count
+            elif test_type == "lpm":
+                library = self.subtraction_game_test_library_by_largest_possible_move
+        elif game_type == "allbut":
+            if test_type == "move_count":
+                library = self.all_but_game_test_library_by_move_count
+            elif test_type == "lpm":
+                library = self.all_but_game_test_library_by_largest_possible_move
+        for key, collection in library.items():
+            collection.plot()
 
 
 class TestCollection():
@@ -56,9 +72,31 @@ class TestCollection():
             if max_move_count is None:
                 max_move_count = self.largest_possible_move
             for move_count in range(1, max_move_count + 1, max(max_move_count//10, 1)):
+                print(move_count)
                 test = Test(move_count=move_count, largest_possible_move=self.largest_possible_move)
                 test.run()
                 self.tests.append(test)
+
+    def plot(self):
+        if self.move_count is not None:
+            self.plot_move_count()
+        if self.largest_possible_move is not None:
+            self.plot_lpm()
+
+    def plot_move_count(self):
+        x = [test.largest_possible_move for test in self.tests]
+        y = [test.mean_period for test in self.tests]
+        print(x)
+        print(y)
+        plt.figure(figsize=(10, 6))
+        plt.plot(x, y, marker='o')
+        plt.title('Mean Period vs Largest Possible Move')
+        plt.xlabel('Largest Possible Move')
+        plt.ylabel('Mean Period')
+        plt.grid(True)
+        plt.show()
+
+
 
     def __str__(self):
         if self.move_count is not None:
@@ -107,6 +145,9 @@ def load(name):
 if __name__ == "__main__":
     tester = load("tester.pkl")
     # tester.test_periodicity_of_subtraction_game_by_move_count(move_count=5)
-    tester.test_periodicity_of_subtraction_game_by_largest_possible_move(largest_possible_move=40)
-    tester.save("tester.pkl")
-    tester.display_library("subtraction", "move_count")
+    # tester.test_periodicity_of_subtraction_game_by_largest_possible_move(largest_possible_move=40)
+    # tester.save("tester.pkl")
+    # tester.display_library("subtraction", "move_count")
+    # tester.display_library("subtraction", "lpm")
+    tester.plot_library("subtraction", "move_count")
+    # print(tester.subtraction_game_test_library_by_largest_possible_move[40].tests[0].periods)
