@@ -21,7 +21,7 @@ class Tester():
 
     def test_periodicity_of_subtraction_game_by_largest_possible_move(self, largest_possible_move):
         collection = TestCollection(largest_possible_move=largest_possible_move)
-        # collection.run_tests
+        collection.run_tests()
 
     def display_library(self, game_type, test_type):
         if game_type == "subtraction":
@@ -45,18 +45,32 @@ class TestCollection():
         self.largest_possible_move = largest_possible_move
         self.tests = []
     
-    def run_tests(self, upper_boundry):
-        for i in range(10, upper_boundry+1, 10):
-            print(i)
-            test = Test(move_count=self.move_count, largest_possible_move=i)
-            test.run()
-            self.tests.append(test)
+    def run_tests(self, upper_boundry=None, max_move_count=None):
+        if self.move_count is not None:
+            for lpm in range(10, upper_boundry+1, 10):
+                print(lpm)
+                test = Test(move_count=self.move_count, largest_possible_move=lpm)
+                test.run()
+                self.tests.append(test)
+        if self.largest_possible_move is not None:
+            if max_move_count is None:
+                max_move_count = self.largest_possible_move
+            for move_count in range(1, max_move_count + 1, max(max_move_count//10, 1)):
+                test = Test(move_count=move_count, largest_possible_move=self.largest_possible_move)
+                test.run()
+                self.tests.append(test)
 
     def __str__(self):
-        output =  f"TestCollection with {len(self.tests)} tests for {self.move_count} moves\n"
-        for test in self.tests:
-            output += test.__str__() + "\n"
-        return output
+        if self.move_count is not None:
+            output =  f"TestCollection with {len(self.tests)} tests for {self.move_count} moves\n"
+            for test in self.tests:
+                output += test.__str__() + "\n"
+            return output
+        if self.largest_possible_move is not None:
+            output =  f"TestCollection with {len(self.tests)} tests for {self.largest_possible_move} as largest possible move\n"
+            for test in self.tests:
+                output += test.__str__() + "\n"
+            return output
 
 
 class Test():
@@ -93,5 +107,6 @@ def load(name):
 if __name__ == "__main__":
     tester = load("tester.pkl")
     # tester.test_periodicity_of_subtraction_game_by_move_count(move_count=5)
+    tester.test_periodicity_of_subtraction_game_by_largest_possible_move(largest_possible_move=40)
     tester.save("tester.pkl")
     tester.display_library("subtraction", "move_count")
