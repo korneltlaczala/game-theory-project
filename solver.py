@@ -5,29 +5,11 @@ class Game():
         self.is_periodic = False
         self.is_arithmeticly_periodic = False
         self.first_period_start = None
-        self.first_period_end = None
-
-    def detect_periodicity(self):
-        n = len(self.result)
-        for l in range(n//3):
-            for p in range(1, (n - l)//3):  
-                is_periodic = True
-                for i in range(l, n - p):
-                    if self.result[i] != self.result[i + p]:
-                        is_periodic = False
-                        break
-                if is_periodic:
-                    self.is_periodic = True
-                    self.first_period_start = l
-                    self.first_period_end = l + p-1
-        
-
-    def detect_arithmetic_periodicity(self):
-        pass
+        self.period_length = None
 
     def __str__(self):
         if self.is_periodic:
-            return f"Periodic game with period {self.first_period_start} - {self.first_period_end}"
+            return f"Periodic game with period starting at {self.first_period_start} with length {self.period_length}"
         return f"Non-periodic game"
 
 class SubtractionGame(Game):
@@ -87,12 +69,25 @@ class SubtractionGame(Game):
         print(f"Player 1 expected winrate: {round(winrate * 100, 2)}%")
         return winrate
         
-
     def does_player1_win(self, starting_position):
         if self.result[starting_position] == 0:
             return False
         return True
-        
+
+    def detect_periodicity(self):
+        n = len(self.result)
+        max_move = max(self.valid_moves)
+        max_period = n - max_move
+        for period_candidate in range(1, max_period + 1):
+            candidate_valid = True
+            for i in range(n-max_move, n):
+                if self.result[i] != self.result[i - period_candidate]:
+                    candidate_valid = False
+                    break
+            if candidate_valid:
+                self.is_periodic = True
+                self.period_length = period_candidate
+                break
 
     def __str__(self):
         if self.valid_moves == set():
@@ -101,8 +96,10 @@ class SubtractionGame(Game):
 
 if __name__ == '__main__':
     game = SubtractionGame()
-    game.add_moves([1,2,6,11])
-    game.calculate(40)
+    game.add_moves([1,2,6])
+    # game.add_moves([1,2,6,11])
+    # game.add_moves([2,3])
+    game.calculate(int(50))
     game.detect_periodicity()
     print(game)
     game.show_result()
