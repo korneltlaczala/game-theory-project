@@ -6,11 +6,18 @@ class Game():
         self.is_arithmeticly_periodic = False
         self.first_period_start = None
         self.period_length = None
+        self.saltus = None
 
     def __str__(self):
         if self.is_periodic:
             return f"Periodic game with period starting at {self.first_period_start} with length {self.period_length}"
         return f"Non-periodic game"
+
+    def mex(self, S):
+        n = len(S)
+        for i in range(n + 1):
+            if i not in S:
+                return i
 
 class AllButGame(Game):
 
@@ -33,13 +40,16 @@ class AllButGame(Game):
             self.invalid_moves.remove(move)
 
     def calculate(self, depth):
-        m = max(self.invalid_moves)
-        inv_game = self.create_inverse_game()
-        for i in range(0, m+1):
-            if i > depth:
-                break
-            self.result.append(inv_game.result[i])
-        
+        self.result = [0]
+        for position in range(1, depth + 1):
+            reachable = set()
+            for move in range(1, depth + 1):
+                if move not in self.invalid_moves and position - move >= 0:
+                    reachable.add(self.result[position - move])
+            if len(reachable) == 0:
+                self.result.append(0)
+            else:
+                self.result.append(self.mex(reachable))
 
     def create_inverse_game(self):
         m = max(self.invalid_moves)
@@ -49,6 +59,27 @@ class AllButGame(Game):
             inv_game.remove_move(move)
         inv_game.calculate(m)
         return inv_game
+
+    def detect_periodicity(self):
+        n = len(self.result)
+        if len(self.invalid_moves) == 0:
+            self.is_periodic = True
+            self.period_length = 1
+            self.first_period_start = 0
+            self.saltus = 1
+            return
+        max_move = max(self.invalid_moves)
+        max_period = n - max_move
+        for period_candidate in range(1, max_period + 1):
+            candidate_valid = True
+            for i in range(n-max_move, n):
+                if self.result[i] != self.result[i - period_candidate]:
+                    candidate_valid = False
+                    break
+            if candidate_valid:
+                self.is_periodic = True
+                self.period_length = period_candidate
+                break
 
     def show_result(self):
         print(self.result)
@@ -72,12 +103,6 @@ class SubtractionGame(Game):
     def remove_moves(self, moves):
         for move in moves:
             self.valid_moves.remove(move)
-
-    def mex(self, S):
-        n = len(S)
-        for i in range(n + 1):
-            if i not in S:
-                return i
 
     def calculate(self, depth):
         self.result = [0]
@@ -121,6 +146,7 @@ class SubtractionGame(Game):
             self.is_periodic = True
             self.period_length = 1
             self.first_period_start = 0
+            self.saltus = None
             return
         max_move = max(self.valid_moves)
         max_period = n - max_move
@@ -170,6 +196,6 @@ if __name__ == '__main__':
     # game.update()
 
     game = AllButGame()
-    game.add_moves([1,3])
-    game.calculate(3)
+    game.add_moves([1,2,3,5,8])
+    game.calculate(100)
     game.show_result()
