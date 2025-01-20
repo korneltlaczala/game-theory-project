@@ -72,14 +72,16 @@ class AllButGame(Game):
         max_period = n - max_move
         for period_candidate in range(1, max_period + 1):
             candidate_valid = True
-            for i in range(n-max_move, n):
-                if self.result[i] != self.result[i - period_candidate]:
-                    candidate_valid = False
+            for saltus_candidate in range(1,period_candidate):
+                for i in range(n-max_move, n):
+                    if self.result[i] != self.result[i - period_candidate]+saltus_candidate:
+                        candidate_valid = False
+                        break
+                if candidate_valid:
+                    self.is_periodic = True
+                    self.period_length = period_candidate
+                    self.saltus=saltus_candidate
                     break
-            if candidate_valid:
-                self.is_periodic = True
-                self.period_length = period_candidate
-                break
 
     def show_result(self):
         print(self.result)
