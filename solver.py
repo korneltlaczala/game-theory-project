@@ -38,9 +38,9 @@ class SubtractionGame(Game):
             if i not in S:
                 return i
 
-    def calculate(self, n):
+    def calculate(self, depth):
         self.result = [0]
-        for position in range(1, n + 1):
+        for position in range(1, depth + 1):
             reachable = set()
             for move in self.valid_moves:
                 if position - move >= 0:
@@ -108,6 +108,11 @@ class SubtractionGame(Game):
                 self.first_period_start = i - 2*self.period_length + 1
                 break
 
+    def update(self, depth=int(1e3)):
+        self.calculate(depth)
+        self.detect_periodicity()
+        print(self)
+
     def __str__(self):
         if self.valid_moves == set():
             return f"Subtraction game with no valid moves\n" + super().__str__()
@@ -118,7 +123,7 @@ if __name__ == '__main__':
     # game.add_moves([1,4,10])
     # game.add_moves([1,2,6,11])
     game.add_moves([1,8,11])
-    game.calculate(int(190))
-    game.detect_periodicity()
-    print(game)
-    game.show_result()
+    # game.calculate(int(190))
+    # game.detect_periodicity()
+    # print(game)
+    game.update()
