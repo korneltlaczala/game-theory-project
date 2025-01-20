@@ -76,6 +76,11 @@ class SubtractionGame(Game):
 
     def detect_periodicity(self):
         n = len(self.result)
+        if len(self.valid_moves) == 0:
+            self.is_periodic = True
+            self.period_length = 1
+            self.first_period_start = 0
+            return
         max_move = max(self.valid_moves)
         max_period = n - max_move
         for period_candidate in range(1, max_period + 1):
@@ -89,17 +94,31 @@ class SubtractionGame(Game):
                 self.period_length = period_candidate
                 break
 
+        if not self.is_periodic:
+            print(f"Either there is no period, or the period is longer than {max_period}")
+            return
+
+        prev_matching = 0
+        for i in range(self.period_length, n):
+            if self.result[i] == self.result[i - self.period_length]:
+                prev_matching += 1
+            else:
+                prev_matching = 0
+            if prev_matching == self.period_length:
+                self.first_period_start = i - 2*self.period_length + 1
+                break
+
     def __str__(self):
         if self.valid_moves == set():
-            return f"Subtraction game with no valid moves"
+            return f"Subtraction game with no valid moves\n" + super().__str__()
         return f"Subtraction game with valid moves {sorted(self.valid_moves)}\n" + super().__str__()
 
 if __name__ == '__main__':
     game = SubtractionGame()
-    game.add_moves([1,2,6])
+    # game.add_moves([1,4,10])
     # game.add_moves([1,2,6,11])
-    # game.add_moves([2,3])
-    game.calculate(int(50))
+    game.add_moves([1,8,11])
+    game.calculate(int(190))
     game.detect_periodicity()
     print(game)
     game.show_result()
