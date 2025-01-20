@@ -1,6 +1,7 @@
 import customtkinter as ctk
 
 from solver import SubtractionGame
+from solver import AllButGame
 
 class App(ctk.CTk):
 
