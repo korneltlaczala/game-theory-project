@@ -12,6 +12,47 @@ class Game():
             return f"Periodic game with period starting at {self.first_period_start} with length {self.period_length}"
         return f"Non-periodic game"
 
+class AllButGame(Game):
+
+    def __init__(self):
+        super().__init__()
+        self.invalid_moves = set()
+
+    def add_move(self, move):
+        self.invalid_moves.add(move)
+
+    def add_moves(self, moves):
+        for move in moves:
+            self.invalid_moves.add(move)
+
+    def remove_move(self, move):
+        self.invalid_moves.remove(move)
+
+    def remove_moves(self, moves):
+        for move in moves:
+            self.invalid_moves.remove(move)
+
+    def calculate(self, depth):
+        m = max(self.invalid_moves)
+        inv_game = self.create_inverse_game()
+        for i in range(0, m+1):
+            if i > depth:
+                break
+            self.result.append(inv_game.result[i])
+        
+
+    def create_inverse_game(self):
+        m = max(self.invalid_moves)
+        inv_game = SubtractionGame()
+        inv_game.add_moves(range(1, m+1))
+        for move in self.invalid_moves:
+            inv_game.remove_move(move)
+        inv_game.calculate(m)
+        return inv_game
+
+    def show_result(self):
+        print(self.result)
+    
 class SubtractionGame(Game):
 
     def __init__(self):
@@ -119,11 +160,16 @@ class SubtractionGame(Game):
         return f"Subtraction game with valid moves {sorted(self.valid_moves)}\n" + super().__str__()
 
 if __name__ == '__main__':
-    game = SubtractionGame()
+    # game = SubtractionGame()
     # game.add_moves([1,4,10])
     # game.add_moves([1,2,6,11])
-    game.add_moves([1,8,11])
+    # game.add_moves([1,8,11])
     # game.calculate(int(190))
     # game.detect_periodicity()
     # print(game)
-    game.update()
+    # game.update()
+
+    game = AllButGame()
+    game.add_moves([1,3])
+    game.calculate(3)
+    game.show_result()

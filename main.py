@@ -9,7 +9,9 @@ class App(ctk.CTk):
         self.title("Subtraction and All-But Games")
         self.geometry("1600x800")
         self.resizable(False, False)
-        self.game = SubtractionGame()
+        self.subgame = SubtractionGame()
+        self.allbutgame = AllButGame()
+        self.game = self.subgame
         self.result_display_length = 45
 
         self.generate_widgets()
